@@ -1,6 +1,5 @@
 # XVtransit
-**Projecte intermodular composat per Nestor &amp; Xincheng.
-**
+**Projecte intermodular composat per Nestor &amp; Xincheng.**
 
 
 
