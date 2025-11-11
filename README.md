@@ -1,2 +1,2 @@
-# xvtransit
-projecte intermodular "xvtransit" composat per Nestor &amp; Xincheng.
+# XVtransit
+projecte intermodular "XVtransit" composat per Nestor &amp; Xincheng.
