@@ -1,49 +1,47 @@
 # XVtransit
-projecte intermodular "XVtransit" composat per Nestor &amp; Xincheng.
+Projecte intermodular "XVtransit" composat per Nestor &amp; Xincheng.
 
 
 
 
-Crear un sistema integral de transport públic intel·ligent, accessible i sostenible que millori l’experiència de mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
+Volem crear un sistema integral de transport públic intel·ligent, accessible i sostenible que millori l’experiència de mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
 
 Nosaltres ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
 És a dir: fem tota la part de tecnologia, disseny i integració perquè el sistema funcioni correctament.
 
+Objectiu general:
+Que el transport públic sigui:
+Assequible per a tots (preu)
+Fiable
+Ràpid
+Amb detecció mitjançant IA per a evitar sobrecàrrega de trànsit i prevenir conglomeracions
+Amb conductors millor formats
+Amb neteja després de cada certa temporada
 
-Objetivo general:
-Que el transporte público sea:
-Asequible para todos (precio)
-Fiable	
-Rápido
-Con detección mediante IA para evitar sobrecarga de tráfico y prevenir conglomeraciones
-Con conductores mejor formados
-Con limpieza después de cada cierta temporada
+Tipus de transport:
+Cotxes automàtics per a ús de poques persones i necessitat de servei exprés
+Autobusos per a una gran quantitat de passatgers
+Drons per a enviar objectes (estil sci-*fi)
 
-Tipos de transporte:
-Coches automáticos para uso de pocas personas y necesidad de servicio exprés
-Autobuses para una gran cantidad de pasajeros
-Drones para enviar objetos (estilo sci-fi)
-
-Aplicación móvil
-Interfaz limpia, sencilla, fácil de usar pero completa
-Posibilidad de reservar asientos especiales para personas con discapacidad
-
+Aplicació mòbil
+Interfície neta, senzilla, fàcil d'usar però completa
+Possibilitat de reservar seients especials per a persones amb discapacitat
 
 
-Página web
-Diseño sencillo para pedir vehículos generales o específicos según el tipo de viaje
-Página inicial con un banner desplazable con diversas diapositivas (un coche con su información, qué hace la empresa, etc.)
-Asistente personal con inteligencia artificial para resolver dudas, responder preguntas sobre los vehículos o ayudar a comprar tickets
-Posibilidad de crearse una cuenta con tus datos personales para que al comprar tickets o bonos se autorrellene automáticamente, así como disponer de un saldo virtual asociado a tu cuenta electrónica
+Pàgina web
+Disseny senzill per a demanar vehicles generals o específics segons el tipus de viatge
+Pàgina inicial amb un bàner desplaçable amb diverses diapositives (un cotxe amb la seva informació, què fa l'empresa, etc.)
+Assistent personal amb intel·ligència artificial per a resoldre dubtes, respondre preguntes sobre els vehicles o ajudar a comprar tiquets
+Possibilitat de crear-se un compte amb les teves dades personals perquè en comprar tiquets o bons s'autoempleni automàticament, així com disposar d'un saldo virtual associat al teu compte electrònic
 
 
 
-Apartado transversal (elementos comunes)
-Opción de comprar tickets y bonos de forma nativa
-Datos de contacto de la empresa al final de la página
-Sincronización en tiempo real con la web y las demás plataformas
-Sincronización con los vehículos mediante GPS, visible en todas las plataformas
+Apartat transversal (elements comuns)
+Opció de comprar tiquets i bons de manera nativa
+Dades de contacte de l'empresa al final de la pàgina
+Sincronització en temps real amb la web i les altres plataformes
+Sincronització amb els vehicles mitjançant GPS, visible en totes les plataformes
 
 
-Integración digital:
-Los tickets y bonos deben aparecer digitalmente en diferentes aplicaciones de manejo de tarjetas virtuales (Google Pay, Apple Pay, Samsung Pay, etc.)
+Integració digital:
+Els tiquets i bons han d'aparèixer digitalment en diferents aplicacions de maneig de targetes virtuals (Google Pay, Apple Pay, Samsung Pay, etc.)
