@@ -43,5 +43,34 @@ Sincronització en temps real amb la web i les altres plataformes
 Sincronització amb els vehicles mitjançant GPS, visible en totes les plataformes
 
 
+Què fem nosaltres en aquest projecte
+Nosaltres ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
+És a dir: fem tota la part de tecnologia, disseny i integració perquè el sistema funcioni correctament.
+
+El que fem nosaltres
+Disseny i desenvolupament de la plataforma digital
+Dissenyem i programem la pàgina web.
+Fem que totes dues estiguin connectades en temps real amb els vehicles.
+Integració amb els vehicles i el sistema GPS
+Connectem els cotxes, autobusos i drones amb el sistema central.
+Mostrem la seva posició, disponibilitat i estat en temps real.
+Implementació de la intel·ligència artificial (IA)
+Configurem sistemes que detecten aglomeracions i optimitzen rutes.
+Ajudem a prevenir sobrecàrregues i millorar la planificació.
+Desenvolupament del sistema de pagament digital
+Implementem la compra de bitllets i abonaments des de la web i l’app.
+Connectem el sistema amb Google Pay, Apple Pay i Samsung Pay.
+Creem un saldo virtual per als usuaris.
+Disseny de la interfície i experiència d’usuari (UI/UX)
+Fem una interfície neta, intuïtiva i accessible.
+Garantim que sigui fàcil per a tothom, incloses persones amb discapacitat.
+Sincronització i dades en temps real
+Ens encarreguem de la comunicació entre vehicles, app i web.
+Assegurem que tota la informació (ocupació, rutes, temps d’arribada) sigui precisa.
+Manteniment tecnològic i suport
+Supervisem que tot funcioni sense errors.
+Actualitzem i millorem el sistema periòdicament.
+
+
 Integració digital:
 Els tiquets i bons han d'aparèixer digitalment en diferents aplicacions de maneig de targetes virtuals (Google Pay, Apple Pay, Samsung Pay, etc.)
