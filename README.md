@@ -92,6 +92,8 @@ Nosaltres ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema
 
 43. Actualitzem i millorem el sistema periòdicament.
 
+44. Farem formació als conductors per tal de que tinguin més experiència.
+
 
 
 Integració digital:
