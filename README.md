@@ -1,100 +1,121 @@
 # XVtransit
-**Projecte intermodular composat per Nestor &amp; Xincheng.**
+**Projecte intermodular desenvolupat per Nestor & Xincheng**
 
+---
 
+## Introducció
 
-Volem crear un sistema integral de transport públic intel·ligent, accessible i sostenible que millori la mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
+**XVtransit** és un projecte intermodular que té com a objectiu crear un sistema integral de transport públic intel·ligent, accessible i sostenible, capaç de millorar la mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
 
-Nosaltres ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
-És a dir: fem tota la part de tecnologia, disseny i integració perquè el sistema funcioni correctament.
+Ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
+En altres paraules, assumim tota la part de tecnologia, disseny i integració, garantint que el sistema funcioni de manera coordinada, eficient i segura.
 
-##### Objectiu general
-Que el transport públic sigui:
-Assequible per a tots (preu)
-Fiable
-Ràpid
-Amb detecció mitjançant IA per a evitar sobrecàrrega de trànsit i prevenir conglomeracions
-Amb conductors millor formats
-Amb neteja després de cada certa temporada
+---
 
-##### Tipus de transport
-Cotxes automàtics per a ús de poques persones i necessitat de servei exprés
-Autobusos per a una gran quantitat de passatgers
-Drons per a enviar objectes (estil sci-fi)
+## Objectiu general
 
-##### Aplicació mòbil
-Interfície neta, senzilla, fàcil d'usar però completa
-Possibilitat de reservar seients especials per a persones amb discapacitat
+Aconseguir que el transport públic sigui:
 
+- Assequible per a tothom (preus justos)
+- Fiable i puntual
+- Ràpid i eficient
+- Equipat amb detecció mitjançant IA per evitar sobrecàrrega i congestions
+- Operat per conductors millor formats
+- Amb neteja i manteniment regulars
 
-##### Pàgina web
-Disseny senzill per a demanar vehicles generals o específics segons el tipus de viatge
-Pàgina inicial amb un bàner desplaçable amb diverses diapositives (un cotxe amb la seva informació, què fa l'empresa, etc.)
-Assistent personal amb intel·ligència artificial per a resoldre dubtes, respondre preguntes sobre els vehicles o ajudar a comprar tiquets
-Possibilitat de crear-se un compte amb les teves dades personals perquè en comprar tiquets o bons s'autoempleni automàticament, així com disposar d'un saldo virtual associat al teu compte electrònic
+---
 
+## Tipus de transport
 
+- Cotxes automàtics — per a serveis exprés o ús individual
+- Autobusos intel·ligents — per a grans quantitats de passatgers
+- Drons de transport — per a enviaments d’objectes i logística (inspiració sci-fi)
 
-Apartat transversal (elements comuns)
-Opció de comprar tiquets i bons de manera nativa
-Dades de contacte de l'empresa al final de la pàgina
-Sincronització en temps real amb la web i les altres plataformes
-Sincronització amb els vehicles mitjançant GPS, visible en totes les plataformes
+---
 
+## Aplicació mòbil
 
-#### Què fem nosaltres en aquest projecte
-Nosaltres ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
-És a dir: fem tota la part de tecnologia, disseny i integració perquè el sistema funcioni correctament.
+- Interfície neta, senzilla i fàcil d’utilitzar, però completa
+- Opció de reservar seients especials per a persones amb discapacitat
+- Sincronització en temps real amb el sistema central i el GPS dels vehicles
+- Possibilitat de compra nativa de tiquets i bons digitals
 
-#### El que fem nosaltres
+---
 
-1. Disseny i desenvolupament de la plataforma digital
+## Pàgina web
 
-3. Dissenyem i programem la pàgina web.
+- Disseny intuitiu i responsiu amb un bàner desplaçable de presentació (vehicles, serveis, filosofia de l’empresa, etc.)
+- Assistent virtual amb IA per resoldre dubtes i guiar l’usuari en la compra de tiquets
+- Sistema d’usuari amb:
+  - Creació de compte personal
+  - Autocompletat de dades en compres
+  - Saldo virtual integrat i vinculació amb sistemes de pagament (Google Pay, Apple Pay, Samsung Pay)
+- Sincronització total amb l’aplicació mòbil i els vehicles
 
-5. Fem que totes dues estiguin connectades en temps real amb els vehicles.
+---
 
-7. Integració amb els vehicles i el sistema GPS
+## Integració digital
 
-9. Connectem els cotxes, autobusos i drones amb el sistema central.
+Els tiquets i abonaments es podran guardar i utilitzar en **carteres digitals** com:
+- Google Pay  
+- Apple Pay  
+- Samsung Pay  
 
-11. Mostrem la seva posició, disponibilitat i estat en temps real.
+Això permetrà que els usuaris puguin accedir ràpidament als seus tiquets sense necessitat d’imprimir-los o mostrar codis manuals.
 
-13. Implementació de la intel·ligència artificial (IA)
+---
 
-15. Configurem sistemes que detecten aglomeracions i optimitzen rutes.
+## Tasques principals del nostre equip
 
-17. Ajudem a prevenir sobrecàrregues i millorar la planificació.
+#### 1. Disseny i desenvolupament de la plataforma digital
+- Creació de la pàgina web i de l'aplicació mòbil
+- Connexió en temps real amb els vehicles i el sistema central
 
-19. Desenvolupament del sistema de pagament digital
+#### 2. Integració amb vehicles i GPS
+- Connexió dels cotxes, autobusos i drons amb el servidor central
+- Visualització de posició, disponibilitat i estat en temps real
 
-21. Implementem la compra de bitllets i abonaments des de la web i l’app.
+#### 3. Implementació d’intel·ligència artificial
+- Sistemes de detecció d’aglomeracions
+- Optimització automàtica de rutes i freqüències
+- Prevenció de sobrecàrrega i retards
 
-23. Connectem el sistema amb Google Pay, Apple Pay i Samsung Pay.
+#### 4. Sistema de pagament digital
+- Compra de bitllets i abonaments des de la web o l’app
+- Compatibilitat amb Google Pay, Apple Pay i Samsung Pay
+- Creació d’un saldo virtual integrat
 
-25. Creem un saldo virtual per als usuaris.
+#### 5. Disseny d’interfície i experiència d’usuari (UI/UX)
+- Interfície neta, accessible i moderna
+- Adaptació per a persones amb discapacitat
+- Navegació fluida i coherent en totes les plataformes
 
-27. Disseny de la interfície i experiència d’usuari (UI/UX)
+#### 6. Sincronització i dades en temps real
+- Comunicació contínua entre vehicles, app i web
+- Informació actualitzada sobre ocupació, rutes i temps d’arribada
 
-29. Fem una interfície neta, intuïtiva i accessible.
+#### 7. Manteniment tecnològic i suport
+- Supervisió constant del sistema
+- Actualitzacions periòdiques i millores de seguretat
+- Formació als conductors per augmentar la seva eficiència i coneixement del sistema
 
-31. Garantim que sigui fàcil per a tothom, incloses persones amb discapacitat.
+---
 
-33. Sincronització i dades en temps real
+## Context
 
-35. Ens encarreguem de la comunicació entre vehicles, app i web.
+El projecte **XVtransit** s’emmarca dins del mòdul intermodular de desenvolupament tecnològic, amb l’objectiu de demostrar la capacitat dels estudiants per crear, integrar i gestionar sistemes intel·ligents complexos.
 
-37. Assegurem que tota la informació (ocupació, rutes, temps d’arribada) sigui precisa.
+**Abast**
+- Desenvolupament complet del sistema digital (web + app)
+- Connexió amb vehicles mitjançant protocols GPS i IoT
+- Implementació d’IA bàsica per detecció i optimització de trànsit
+- Integració de mètodes de pagament electrònic
+- Gestió de dades i sincronització en temps real
+- Gestió de vehicles, passatgers i trajectes
+- Compra de bitllets, abonaments i seguiment de trajectes
+- Visualització d’informació en temps real per a usuaris i administradors
+- Eines de suport, manteniment i formació
 
-39. Manteniment tecnològic i suport
+---
 
-41. Supervisem que tot funcioni sense errors.
-
-43. Actualitzem i millorem el sistema periòdicament.
-
-44. Farem formació als conductors per tal de que tinguin més experiència.
-
-
-
-Integració digital:
-Els tiquets i bons han d'aparèixer digitalment en diferents aplicacions de maneig de targetes virtuals (Google Pay, Apple Pay, Samsung Pay, etc.)
+> **XVtransit** representa el futur de la mobilitat urbana: un ecosistema digital intel·ligent, connectat i sostenible, al servei de les persones.
