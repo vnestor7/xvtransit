@@ -25,6 +25,24 @@ Aconseguir que el transport públic sigui:
 
 ---
 
+## Context
+
+**XVtransit** s’emmarca dins de diversos mòduls del cicle informàtic, amb l’objectiu de demostrar els coneixements apresos en aquest projecte.
+
+**Abast**
+- Desenvolupament complet del sistema digital (web + app)
+- Connexió amb vehicles mitjançant protocols GPS i IoT
+- Implementació d’IA bàsica per detecció i optimització de trànsit
+- Integració de mètodes de pagament electrònic
+- Gestió de dades i sincronització en temps real
+- Gestió de vehicles, passatgers i trajectes
+- Formació més personalitzada als conductors
+- Compra de bitllets, abonaments i seguiment de trajectes
+- Visualització d’informació en temps real per a usuaris i administradors
+- Eines de suport, manteniment i formació
+
+---
+
 ## Tipus de transport
 
 - Cotxes automàtics — per a serveis exprés o ús individual
@@ -98,23 +116,6 @@ Això permetrà que els usuaris puguin accedir ràpidament als seus tiquets sens
 - Supervisió constant del sistema
 - Actualitzacions periòdiques i millores de seguretat
 - Formació als conductors per augmentar la seva eficiència i coneixement del sistema
-
----
-
-## Context
-
-El projecte **XVtransit** s’emmarca dins del mòdul intermodular de desenvolupament tecnològic, amb l’objectiu de demostrar la capacitat dels estudiants per crear, integrar i gestionar sistemes intel·ligents complexos.
-
-**Abast**
-- Desenvolupament complet del sistema digital (web + app)
-- Connexió amb vehicles mitjançant protocols GPS i IoT
-- Implementació d’IA bàsica per detecció i optimització de trànsit
-- Integració de mètodes de pagament electrònic
-- Gestió de dades i sincronització en temps real
-- Gestió de vehicles, passatgers i trajectes
-- Compra de bitllets, abonaments i seguiment de trajectes
-- Visualització d’informació en temps real per a usuaris i administradors
-- Eines de suport, manteniment i formació
 
 ---
 
