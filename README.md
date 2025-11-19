@@ -16,7 +16,6 @@ En altres paraules, assumim tota la part de tecnologia, disseny i integració, g
 
 Aconseguir que el transport públic sigui:
 
-- Assequible per a tothom (preus justos)
 - Fiable i puntual
 - Ràpid i eficient
 - Equipat amb detecció mitjançant IA per evitar sobrecàrrega i congestions
