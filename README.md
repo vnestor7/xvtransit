@@ -28,7 +28,7 @@ Aconseguir que el transport públic sigui:
 
 **XVtransit** s’emmarca dins de diversos mòduls del cicle informàtic, amb l’objectiu de demostrar els coneixements apresos en aquest projecte.
 
-**Abast**
+## Abast
 - Desenvolupament complet del sistema digital (web + app)
 - Connexió amb vehicles mitjançant protocols GPS i IoT
 - Implementació d’IA bàsica per detecció i optimització de trànsit
