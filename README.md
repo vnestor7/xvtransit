@@ -29,33 +29,25 @@ Aconseguir que el transport públic sigui:
 **XVtransit** s’emmarca dins de diversos mòduls del cicle informàtic, amb l’objectiu de demostrar els coneixements apresos en aquest projecte.
 
 ## Abast
-- Desenvolupament complet del sistema digital (web + app)
-- Connexió amb vehicles mitjançant protocols GPS i IoT
-- Implementació d’IA bàsica per detecció i optimització de trànsit
-- Integració de mètodes de pagament electrònic
+
+### Fase 1
+
+- Plataforma web bàsica (informació, rutes, compra senzilla)
+- Sistema d’usuaris i perfils (viatger, operador, conductor)
+- Ticketing digital (bitllets senzills i abonaments)
+- Pagaments electrònics i carteres digitals (Google/Apple/Samsung Pay)
+- Connexió amb vehicles via GPS/IoT (posició i estat)
 - Gestió de dades i sincronització en temps real
-- Gestió de vehicles, passatgers i trajectes
+- Visualització en temps real per a usuaris i administradors
+- Gestió de vehicles, passatgers i trajectes (dades de mobilitat)
+
+### Fase 2
+
+- IA bàsica per detecció d’aglomeracions i optimització inicial
+- Notificacions a usuaris (retards, canvis de parada) i assistent bàsic
+- Eines de suport i manteniment tecnològic del sistema
 - Formació més personalitzada als conductors
-- Compra de bitllets, abonaments i seguiment de trajectes
-- Visualització d’informació en temps real per a usuaris i administradors
-- Eines de suport, manteniment i formació
-
----
-
-## Tipus de transport
-
-- Cotxes automàtics — per a serveis exprés o ús individual
-- Autobusos intel·ligents — per a grans quantitats de passatgers
-- Drons de transport — per a enviaments d’objectes i logística (inspiració sci-fi)
-
----
-
-## Aplicació mòbil
-
-- Interfície neta, senzilla i fàcil d’utilitzar, però completa
-- Opció de reservar seients especials per a persones amb discapacitat
-- Sincronització en temps real amb el sistema central i el GPS dels vehicles
-- Possibilitat de compra nativa de tiquets i bons digitals
+- Seguretat i compliment (RGPD, còpies, monitoratge bàsic)
 
 ---
 
@@ -67,7 +59,7 @@ Aconseguir que el transport públic sigui:
   - Creació de compte personal
   - Autocompletat de dades en compres
   - Saldo virtual integrat i vinculació amb sistemes de pagament (Google Pay, Apple Pay, Samsung Pay)
-- Sincronització total amb l’aplicació mòbil i els vehicles
+- Billets senzills / Abono 
 
 ---
 
@@ -85,11 +77,10 @@ Això permetrà que els usuaris puguin accedir ràpidament als seus tiquets sens
 ## Tasques principals del nostre equip
 
 #### 1. Disseny i desenvolupament de la plataforma digital
-- Creació de la pàgina web i de l'aplicació mòbil
 - Connexió en temps real amb els vehicles i el sistema central
 
 #### 2. Integració amb vehicles i GPS
-- Connexió dels cotxes, autobusos i drons amb el servidor central
+- Connexió dels autobusos amb el servidor central
 - Visualització de posició, disponibilitat i estat en temps real
 
 #### 3. Implementació d’intel·ligència artificial
