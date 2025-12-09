@@ -30,26 +30,102 @@ Aconseguir que el transport públic sigui:
 
 ## Abast
 
-### Fase 1
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
 
-- Plataforma web bàsica (informació, rutes, compra senzilla)
-- Sistema d’usuaris i perfils (viatger, operador, conductor)
+<div>
+
+### Fase 1 — Web pública
+
+- Plataforma web bàsica per a usuaris (rutes, horaris, parades, compra senzilla)
+- Sistema d’usuaris i perfils
 - Ticketing digital (bitllets senzills i abonaments)
-- Pagaments electrònics i carteres digitals (Google/Apple/Samsung Pay)
-- Connexió amb vehicles via GPS/IoT (posició i estat)
-- Gestió de dades i sincronització en temps real
-- Visualització en temps real per a usuaris i administradors
-- Gestió de vehicles, passatgers i trajectes (dades de mobilitat)
+- Pagaments electrònics i carteres digitals: (Google Pay, Apple Pay, Samsung Pay)
+- Visualització en temps real dels vehicles
+- Posició bàsica
+- Ocupació aproximada
+- Temps d’arribada estimat
+- Assistent virtual i sistema de FAQs interactives
+- Generació i gestió de bitllets des del perfil d’usuari
+- Sistema de notificacions a viatgers (retards, incidències, canvis d’itinerari)
 
-### Fase 2
+</div>
 
-- IA bàsica per detecció d’aglomeracions i optimització inicial
-- Notificacions a usuaris (retards, canvis de parada) i assistent bàsic
-- Eines de suport i manteniment tecnològic del sistema
-- Formació més personalitzada als conductors
-- Seguretat i compliment (RGPD, còpies, monitoratge bàsic)
+<div>
 
----
+### Fase 1 — Web privada
+
+- Connexió amb vehicles via GPS/IoT
+- Posició exacta
+- Estat del vehicle
+- Diagnòstics i telemetria
+- Gestió de dades centralitzada
+- Sincronització
+- Logs
+- Estadístiques
+- Panell d’administració intern
+- Gestió de vehicles
+- Gestió de conductors
+- Assignació de rutes i torns
+- Gestió interna de passatgers i trajectes (dades de mobilitat)
+- Sistema d’usuaris i perfils interns
+- Control d’operacions en temps real
+- Estat de línies
+- Incidències
+- Gestió d’integracions amb el servidor central i la base de dades
+
+</div>
+
+</div>
+
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+<div>
+
+### Fase 2 — Web pública
+
+- IA bàsica per avisos d’aglomeració en temps real
+- Recomanacions de trajectes i optimització inicial
+- Portal de suport i atenció al viatger
+- Formació bàsica interactiva per conductors (informativa)
+
+</div>
+
+<div>
+
+### Fase 2 — Web privada
+
+- IA interna avançada
+- Detecció d’aglomeracions
+- Eines de suport tècnic i manteniment del sistema
+- Formació avançada per conductors
+- Protocols
+- Manuals
+- Monitoratge de seguretat i compliment legal
+- RGPD
+- Auditories
+- Backups
+- Sistema intern de notificacions (conductors)
+
+</div>
+
+</div>
+
+### Elements híbrids (pública + privada)
+
+Funcionalitats que connecten tots dos entorns i comparteixen informació.
+Gestió de vehicles, passatgers i trajectes
+
+- Web privada: Gestió completa
+- Web pública: Visualització bàsica
+
+Dades de mobilitat
+- Web pública: ocupació estimada
+- Web privada: dades completes i històriques
+
+Sistema de pagament digital
+- Web pública: pagament i compra
+- Web privada: validació, antifrau i estadístiques
 
 ## Pàgina web
 
