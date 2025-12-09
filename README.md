@@ -30,10 +30,6 @@ Aconseguir que el transport públic sigui:
 
 ## Abast
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
-
-<div>
-
 ### Fase 1 — Web pública
 
 - Plataforma web bàsica per a usuaris (rutes, horaris, parades, compra senzilla)
@@ -47,10 +43,6 @@ Aconseguir que el transport públic sigui:
 - Assistent virtual i sistema de FAQs interactives
 - Generació i gestió de bitllets des del perfil d’usuari
 - Sistema de notificacions a viatgers (retards, incidències, canvis d’itinerari)
-
-</div>
-
-<div>
 
 ### Fase 1 — Web privada
 
@@ -73,25 +65,12 @@ Aconseguir que el transport públic sigui:
 - Incidències
 - Gestió d’integracions amb el servidor central i la base de dades
 
-</div>
-
-</div>
-
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-
-<div>
-
 ### Fase 2 — Web pública
 
 - IA bàsica per avisos d’aglomeració en temps real
 - Recomanacions de trajectes i optimització inicial
 - Portal de suport i atenció al viatger
 - Formació bàsica interactiva per conductors (informativa)
-
-</div>
-
-<div>
 
 ### Fase 2 — Web privada
 
@@ -106,10 +85,6 @@ Aconseguir que el transport públic sigui:
 - Auditories
 - Backups
 - Sistema intern de notificacions (conductors)
-
-</div>
-
-</div>
 
 ### Elements híbrids (pública + privada)
 
