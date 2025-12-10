@@ -2,6 +2,22 @@
   <img src="https://avatars.githubusercontent.com/u/206240849?v=4" width="150" align="right">
 </a>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <h1>XVtransit</h1>
 <b>Projecte intermodular desenvolupat per Nestor & Xincheng</b>
 
