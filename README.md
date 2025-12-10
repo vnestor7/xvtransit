@@ -1,23 +1,3 @@
-<a href="https://github.com/vnestor7">
-  <img src="https://avatars.githubusercontent.com/u/206240849?v=4" width="150" align="right">
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <h1>XVtransit</h1>
 <b>Projecte intermodular desenvolupat per Nestor & Xincheng</b>
 
@@ -34,6 +14,16 @@ En altres paraules, assumim tota la part de tecnologia, disseny i integració, g
 ---
 
 ## Objectiu general
+
+<div align="right" style="float: right; text-align: right; margin-left: 20px;">
+  <a href="https://github.com/vnestor7">
+    <img src="https://raw.githubusercontent.com/vnestor7/xvtransit/refs/heads/main/logo-xvtransit.png" width="150">
+  </a>
+  <div style="font-size: 14px; font-weight: bold; margin-top: 5px;">
+    PÀGINA WEB
+  </div>
+</div>
+
 
 Aconseguir que el transport públic sigui:
 
