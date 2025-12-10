@@ -7,7 +7,7 @@
 
 ---
 
-## Introducció
+<h3> Introducció </h3>
 
 **XVtransit** és un projecte intermodular que té com a objectiu crear un sistema integral de transport públic intel·ligent, accessible i sostenible, capaç de millorar la mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
 
