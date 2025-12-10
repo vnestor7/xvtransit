@@ -1,6 +1,6 @@
 # XVtransit
 **Projecte intermodular desenvolupat per Nestor & Xincheng**
-
+[<img src="https://avatars.githubusercontent.com/u/206240849?v=4">](https://github.com/vnestor7)
 ---
 
 ## Introducció
