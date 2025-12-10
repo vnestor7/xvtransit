@@ -6,15 +6,6 @@
 
 ## Introducció
 
-**XVtransit** és un projecte intermodular que té com a objectiu crear un sistema integral de transport públic intel·ligent, accessible i sostenible, capaç de millorar la mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
-
-Ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
-En altres paraules, assumim tota la part de tecnologia, disseny i integració, garantint que el sistema funcioni de manera coordinada, eficient i segura.
-
----
-
-## Objectiu general
-
 <div align="right" style="float: right; text-align: right; margin-left: 20px;">
   <a href="https://github.com/vnestor7">
     <img src="https://raw.githubusercontent.com/vnestor7/xvtransit/refs/heads/main/logo-xvtransit.png" width="150">
@@ -24,6 +15,14 @@ En altres paraules, assumim tota la part de tecnologia, disseny i integració, g
   </div>
 </div>
 
+**XVtransit** és un projecte intermodular que té com a objectiu crear un sistema integral de transport públic intel·ligent, accessible i sostenible, capaç de millorar la mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
+
+Ens dediquem a dissenyar, desenvolupar i posar en marxa tot el sistema digital i tecnològic del transport públic intel·ligent.
+En altres paraules, assumim tota la part de tecnologia, disseny i integració, garantint que el sistema funcioni de manera coordinada, eficient i segura.
+
+---
+
+## Objectiu general
 
 Aconseguir que el transport públic sigui:
 
