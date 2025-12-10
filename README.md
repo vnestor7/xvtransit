@@ -1,19 +1,13 @@
-<h1>XVtransit</h1>
-<b>Projecte intermodular desenvolupat per Nestor & Xincheng</b>
+# XVtransit
+<a href="http://xvtransit.cat">
+  <img src="https://raw.githubusercontent.com/vnestor7/xvtransit/refs/heads/main/logo-xvtransit.png" width="150" align="right">
+</a>
 
+**Projecte intermodular desenvolupat per Nestor & Xincheng**
 
 ---
 
 ## Introducció
-
-<div align="right" style="float: right; text-align: right; margin-left: 20px;">
-  <a href="https://github.com/vnestor7">
-    <img src="https://raw.githubusercontent.com/vnestor7/xvtransit/refs/heads/main/logo-xvtransit.png" width="150">
-  </a>
-  <div style="font-size: 14px; font-weight: bold; margin-top: 5px;">
-    PÀGINA WEB
-  </div>
-</div>
 
 **XVtransit** és un projecte intermodular que té com a objectiu crear un sistema integral de transport públic intel·ligent, accessible i sostenible, capaç de millorar la mobilitat urbana mitjançant tecnologia, eficiència i inclusió.
 
