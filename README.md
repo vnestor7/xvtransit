@@ -1,4 +1,4 @@
-# XVTransit
+# <img src="logo-xvtransit.png" width="40"> XVTransit
 
 **Projecte de digitalització per millorar la gestió del transport públic**
 
