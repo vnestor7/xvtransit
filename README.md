@@ -13,19 +13,19 @@ Projecte realitzat dins del mòdul **M12 – Projecte Intermodular** del cicle *
 
 XVTransit és un projecte pensat per millorar la manera com es consulta i es gestiona el transport públic.
 
-La idea és crear una plataforma digital amb una part per als usuaris i una altra part per a la gestió interna. Això permet tenir la informació més ordenada, més clara i més fàcil d’utilitzar.
+La idea principal és crear una plataforma digital amb una part pública per als viatgers i una part privada per a la gestió interna. Això permet tenir la informació més ordenada, clara i fàcil d’utilitzar.
 
-El projecte combina diferents àrees treballades al cicle, com la web, la xarxa, els sistemes, la seguretat, les dades i la documentació tècnica.
+El projecte aplica diferents coneixements del cicle SMX, com desenvolupament web, xarxes, sistemes, seguretat, dades i documentació tècnica.
 
 ---
 
-## Problema que volem solucionar
+## Problema que vol solucionar
 
-En molts serveis de transport, la informació no sempre és fàcil de trobar. Els usuaris poden tenir dificultats per consultar horaris, rutes, avisos o informació del servei.
+En molts serveis de transport, la informació no sempre és fàcil de trobar. Els usuaris poden tenir dificultats per consultar horaris, rutes, avisos o informació actualitzada del servei.
 
-També pot passar que la gestió interna estigui separada en diferents eines, cosa que fa que el treball sigui menys ordenat.
+També pot passar que la gestió interna estigui separada en diferents eines, cosa que fa més difícil controlar dades, incidències i canvis.
 
-XVTransit intenta donar una solució més centralitzada i clara, tant per als viatgers com per als treballadors.
+XVTransit proposa una solució més centralitzada i clara, tant per als viatgers com per als treballadors.
 
 ---
 
@@ -79,100 +79,33 @@ Pot incloure:
 
 ## Arquitectura general
 
-El sistema es planteja de manera general amb aquests elements:
+XVTransit es planteja com un sistema amb diferents parts connectades entre elles:
 
-```txt
-Usuaris
-   ↓
-Part pública
-   ↓
-Sistema central
-   ↓
-Dades del servei
-   ↑
-Part privada
-   ↑
-Treballadors / operadors
-```
+- usuaris que consulten la informació;
+- part pública del sistema;
+- part privada per als operadors;
+- sistema central de gestió;
+- dades del servei;
+- infraestructura bàsica de xarxa i seguretat.
 
-La idea és que totes les parts treballin connectades, però separant bé la informació pública de la informació interna.
-
-També es contempla una infraestructura bàsica amb servidor, comunicacions, còpies de seguretat i control d’accés.
+La idea és que la informació pública i la informació interna estiguin separades, però que el sistema funcioni de forma conjunta.
 
 ---
 
-## Tecnologies i àrees treballades
+## Àrees tècniques treballades
 
-En aquest projecte es treballen diferents àrees tècniques:
+En aquest projecte es treballen diferents àrees:
 
-| Àrea | Ús dins del projecte |
+| Àrea | Aplicació dins del projecte |
 |---|---|
-| Desenvolupament web | Crear la part visual i funcional de la plataforma |
-| Programació | Afegir funcionalitats bàsiques |
-| Bases de dades | Guardar informació del servei |
-| Xarxes | Connectar els diferents elements del sistema |
-| Sistemes operatius | Preparar l’entorn on funcionarien els serveis |
-| Seguretat | Protegir accessos, dades i comunicacions |
-| Documentació | Explicar el projecte, les decisions i les proves |
-| Gestió del projecte | Organitzar fases, tasques i entregables |
-
----
-
-## Estructura del repositori
-
-Estructura recomanada del projecte:
-
-```txt
-XVTransit/
-│
-├── demo/
-│   └── Proves i material de demostració
-│
-├── memòria tècnica/
-│   └── Documents principals del projecte
-│
-├── presentació/
-│   └── Material per a la defensa
-│
-├── docs/
-│   └── Documentació complementària
-│
-├── web/
-│   └── Fitxers de la plataforma web
-│
-├── infraestructura/
-│   └── Esquemes, xarxa i seguretat
-│
-├── logo-xvtransit.png
-│
-└── README.md
-```
-
-Aquesta estructura ajuda a tenir el repositori més ordenat i fàcil de revisar.
-
----
-
-## Planificació general
-
-El projecte s’ha organitzat en fases:
-
-1. **Anàlisi inicial**  
-   Definició del problema, objectius i abast.
-
-2. **Disseny del sistema**  
-   Preparació de l’estructura general, casos d’ús i esquemes.
-
-3. **Desenvolupament**  
-   Creació de la part web i funcionalitats principals.
-
-4. **Infraestructura i seguretat**  
-   Proposta de xarxa, servidor, accessos i còpies.
-
-5. **Proves i revisió**  
-   Comprovació del funcionament i correcció d’errors.
-
-6. **Documentació final**  
-   Preparació de la memòria, annexos i presentació.
+| Desenvolupament web | Creació de la part pública i privada |
+| Programació | Funcionalitats bàsiques del sistema |
+| Bases de dades | Organització de la informació |
+| Xarxes | Connexió entre parts del sistema |
+| Sistemes operatius | Entorn on funcionarien els serveis |
+| Seguretat | Protecció d’accessos i dades |
+| Documentació | Memòria tècnica, proves i explicacions |
+| Gestió del projecte | Fases, tasques i planificació |
 
 ---
 
@@ -187,20 +120,35 @@ Els casos d’ús principals del projecte són:
 5. El sistema rep o actualitza informació dels vehicles.
 6. El personal autoritzat valida informació o bitllets.
 
-Aquests casos d’ús serveixen per explicar què ha de fer el sistema i quines parts necessita.
+Aquests casos d’ús ajuden a entendre què fa el sistema i quines parts necessita.
 
 ---
 
-## Proposta de prova pilot
+## Què es pot veure en aquest repositori?
+
+En aquest repositori es pot trobar el material principal del projecte XVTransit:
+
+- documentació del projecte;
+- demo o proves de la web;
+- material de presentació;
+- esquemes i plànols;
+- captures i evidències del treball;
+- fitxers relacionats amb la proposta tècnica.
+
+Tot el contingut està pensat per explicar el projecte de manera clara i poder revisar la seva evolució.
+
+---
+
+## Prova pilot
 
 El projecte es planteja com una prova pilot, no com una implantació completa en una empresa real.
 
-La prova pilot serveix per demostrar la idea principal del sistema i comprovar que la solució podria funcionar en un entorn més real.
+Aquesta prova pilot serveix per demostrar la idea principal del sistema i comprovar que la solució podria funcionar en un entorn més real.
 
 Inclou:
 
-- una web de demostració;
-- una part de gestió interna;
+- una proposta de plataforma digital;
+- una part pública i una part privada;
 - dades de prova;
 - documentació tècnica;
 - esquemes i plànols;
@@ -217,7 +165,6 @@ Amb aquest projecte s’ha aconseguit:
 - explicar el problema i la solució;
 - preparar casos d’ús;
 - crear una arquitectura general;
-- plantejar una estructura de repositori;
 - preparar documentació tècnica;
 - fer una planificació;
 - crear material visual per entendre millor el sistema;
