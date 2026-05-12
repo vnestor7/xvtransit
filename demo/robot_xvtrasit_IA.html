@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taquilla de Autobuses - Robot Asistente 3D</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --panel-bg: rgba(7, 17, 31, 0.82);
+            --accent: #00e5ff;
+            --accent2: #0ea5e9;
+            --danger: #e63946;
+            --text: #e0e0e0;
+            --text-light: #ffffff;
+            --gold: #d7aa55;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --radius: 16px;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: radial-gradient(circle at top, #0f2740 0%, #07111f 45%, #020617 100%);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: auto;
+        }
+
+        /* Overlay UI */
+        #ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* Header */
+        #header {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 40px;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+            box-shadow: var(--shadow);
+        }
+        #header .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        #header .logo .icon {
+            margin-right: 6px;
+        }
+        #status-led {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 12px #4ade80;
+            animation: pulse-led 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        #status-led.listening {
+            background: #ef4444;
+            box-shadow: 0 0 20px #ef4444;
+            animation: pulse-led-fast 0.6s ease-in-out infinite;
+        }
+        #status-led.thinking {
+            background: #f59e0b;
+            box-shadow: 0 0 16px #f59e0b;
+            animation: pulse-led 1s ease-in-out infinite;
+        }
+        #status-led.speaking {
+            background: #00ccff;
+            box-shadow: 0 0 22px #00ccff;
+            animation: pulse-led-fast 0.4s ease-in-out infinite;
+        }
+        @keyframes pulse-led {
+            0%,
+            100% {
+                box-shadow: 0 0 8px currentColor;
+            }
+            50% {
+                box-shadow: 0 0 24px currentColor, 0 0 40px currentColor;
+            }
+        }
+        @keyframes pulse-led-fast {
+            0%,
+            100% {
+                box-shadow: 0 0 12px currentColor;
+            }
+            50% {
+                box-shadow: 0 0 32px currentColor, 0 0 50px currentColor;
+            }
+        }
+
+        /* Chat temporal tipo subtítulos: solo palabras, sin panel fijo */
+        #chat-panel {
+            position: fixed;
+            bottom: 145px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+            width: min(92vw, 760px);
+            pointer-events: none;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: visible;
+        }
+        #chat-panel::-webkit-scrollbar {
+            display: none;
+        }
+        .chat-msg {
+            padding: 0;
+            border-radius: 0;
+            font-size: clamp(1rem, 2.1vw, 1.45rem);
+            font-weight: 700;
+            line-height: 1.35;
+            max-width: 100%;
+            word-wrap: break-word;
+            letter-spacing: 0.2px;
+            animation: subtitleIn 0.25s ease, subtitleOut 0.6s ease 5.4s forwards;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 22px rgba(0,229,255,0.45);
+        }
+        .chat-msg.user {
+            color: #7dd3fc;
+        }
+        .chat-msg.robot {
+            color: #ffffff;
+        }
+        @keyframes subtitleIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes subtitleOut {
+            to { opacity: 0; transform: translateY(-8px) scale(0.98); }
+        }
+
+        /* Controls area */
+        #controls-area {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            pointer-events: auto;
+        }
+        #mic-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(0, 180, 216, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+        #mic-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 12px 36px rgba(0, 180, 216, 0.7);
+        }
+        #mic-btn:active {
+            transform: scale(0.94);
+            transition: transform 0.1s;
+        }
+        #mic-btn.listening {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6);
+            animation: mic-pulse 0.8s ease-in-out infinite;
+        }
+        #mic-btn.speaking {
+            background: linear-gradient(135deg, #00ccff, #0099cc);
+            box-shadow: 0 8px 32px rgba(0, 204, 255, 0.6);
+        }
+        @keyframes mic-pulse {
+            0%,
+            100% {
+                box-shadow: 0 8px 28px rgba(239, 68, 68, 0.5);
+            }
+            50% {
+                box-shadow: 0 8px 50px rgba(239, 68, 68, 0.9), 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+        }
+        #mic-btn svg {
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+        }
+        .wave-rings {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            animation: wave-expand 1.2s ease-out infinite;
+            opacity: 0;
+        }
+        .wave-rings.active {
+            opacity: 1;
+        }
+        .wave-rings:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        .wave-rings:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        @keyframes wave-expand {
+            0% {
+                width: 72px;
+                height: 72px;
+                opacity: 0.7;
+            }
+            100% {
+                width: 160px;
+                height: 160px;
+                opacity: 0;
+                margin: -44px;
+            }
+        }
+
+        /* Text input fallback */
+        #text-input-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+        }
+        #text-input {
+            padding: 12px 18px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(20, 20, 40, 0.85);
+            color: #fff;
+            font-size: 0.95rem;
+            width: 200px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            outline: none;
+            transition: border 0.3s;
+        }
+        #text-input:focus {
+            border-color: var(--accent);
+        }
+        #send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        #send-btn:hover {
+            background: var(--accent2);
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            #header {
+                padding: 8px 16px;
+                border-radius: 30px;
+            }
+            #header .logo {
+                font-size: 1rem;
+            }
+            #mic-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            #mic-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+            #chat-panel {
+                bottom: 118px;
+                width: 94%;
+            }
+            #text-input {
+                width: 140px;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            #controls-area {
+                gap: 10px;
+                bottom: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas 3D -->
+    <div id="canvas3d"></div>
+
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <!-- Header -->
+        <div id="header">
+            <div id="status-led" title="Estado del robot"></div>
+            <span class="logo"><span class="icon">🚌</span>ASISTENTE DE TRANSPORTE PÚBLICO</span>
+        </div>
+
+        <!-- Chat panel -->
+        <div id="chat-panel">
+            <div class="chat-msg robot">👋 ¡Hola! Soy el asistente virtual de la taquilla. Pregúntame sobre horarios, billetes o precios.</div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls-area">
+            <div id="text-input-area">
+                <input type="text" id="text-input" placeholder="Escribe tu mensaje..." />
+                <button id="send-btn" title="Enviar">➤</button>
+            </div>
+            <button id="mic-btn" title="Hablar por micrófono">
+                <div class="wave-rings"></div>
+                <div class="wave-rings"></div>
+                <div class="wave-rings"></div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="9" y="1" width="6" height="12" rx="3" stroke-linecap="round"/>
+                    <path d="M5 11a7 7 0 0 0 14 0" stroke-linecap="round"/>
+                    <line x1="12" y1="19" x2="12" y2="23" stroke-linecap="round"/>
+                    <line x1="8" y1="23" x2="16" y2="23" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+        // ==================== DOM ELEMENTS ====================
+        const container = document.getElementById('canvas3d');
+        const micBtn = document.getElementById('mic-btn');
+        const statusLed = document.getElementById('status-led');
+        const chatPanel = document.getElementById('chat-panel');
+        const textInput = document.getElementById('text-input');
+        const sendBtn = document.getElementById('send-btn');
+        const waveRings = micBtn.querySelectorAll('.wave-rings');
+
+        // ==================== STATE ====================
+        let isListening = false;
+        let isSpeaking = false;
+        let isThinking = false;
+        let robotState = 'idle'; // idle | listening | thinking | speaking
+        let mouthOpen = false;
+        let lastMouthToggle = 0;
+        let mouthInterval = 150;
+        let needsFaceUpdate = true;
+        let lastBlinkTime = 0;
+        let blinkInterval = 3000 + Math.random() * 4000;
+        let currentBlinkProgress = 0;
+        let isBlinking = false;
+
+        // ==================== THREE.JS SETUP ====================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#f3f7fb');
+        scene.fog = new THREE.Fog('#f3f7fb', 5, 13);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.28;
+        container.appendChild(renderer.domElement);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 20);
+        camera.position.set(0, 1.58, 3.85);
+        camera.lookAt(0, 1.12, 0.62);
+
+        // OrbitControls con restricciones (como cliente frente a taquilla)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 1.1, 0.7);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.minDistance = 2.5;
+        controls.maxDistance = 5.5;
+        controls.maxPolarAngle = Math.PI * 0.55;
+        controls.minPolarAngle = Math.PI * 0.2;
+        // Bloqueo real de giro lateral: OrbitControls usa min/maxAzimuthAngle.
+        // Con esto solo se puede ver la parte frontal del robot, nunca la trasera.
+        controls.maxAzimuthAngle = Math.PI * 0.18;
+        controls.minAzimuthAngle = -Math.PI * 0.18;
+        controls.enablePan = false;
+        controls.update();
+
+        // ==================== LIGHTING ====================
+        const ambientLight = new THREE.AmbientLight('#ffffff', 1.05);
+        scene.add(ambientLight);
+
+        // Luz cálida principal de sala elegante
+        const ceilingLight = new THREE.PointLight('#ffffff', 58, 11, 1.2);
+        ceilingLight.position.set(0, 2.9, 0.45);
+        ceilingLight.castShadow = true;
+        ceilingLight.shadow.mapSize.width = 1024;
+        ceilingLight.shadow.mapSize.height = 1024;
+        ceilingLight.shadow.camera.near = 0.1;
+        ceilingLight.shadow.camera.far = 15;
+        ceilingLight.shadow.bias = -0.0001;
+        scene.add(ceilingLight);
+
+        // Luz fría de ambiente futurista
+        const fillLight = new THREE.PointLight('#ffffff', 20, 8, 1.65);
+        fillLight.position.set(0, 1.8, 3.1);
+        scene.add(fillLight);
+
+        // Luz lateral dorada para dar sensación premium
+        const goldSideLight = new THREE.PointLight('#fff2d8', 11, 7, 1.8);
+        goldSideLight.position.set(-2.4, 2.0, 1.8);
+        scene.add(goldSideLight);
+
+        // Luz de la pantalla del robot (cambia de color)
+        const robotScreenLight = new THREE.PointLight('#00e5ff', 3.5, 1.7, 2);
+        robotScreenLight.position.set(0, 1.35, 0.3);
+        scene.add(robotScreenLight);
+
+        // Spot sobre el mostrador
+        const spotLight = new THREE.SpotLight('#ffffff', 27, 7.2, Math.PI / 5, 0.32, 1);
+        spotLight.position.set(0, 2.65, 2.05);
+        spotLight.target.position.set(0, 0.95, 1.25);
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 512;
+        spotLight.shadow.mapSize.height = 512;
+        scene.add(spotLight);
+        scene.add(spotLight.target);
+
+        // ==================== MATERIALS ====================
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: '#c8d2de', roughness: 0.58, metalness: 0.02 });
+        const wallPanelMaterial = new THREE.MeshStandardMaterial({ color: '#d8e0ea', roughness: 0.42, metalness: 0.04 });
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: '#222b38', roughness: 0.28, metalness: 0.22 });
+        const counterMaterial = new THREE.MeshStandardMaterial({ color: '#111827', roughness: 0.35, metalness: 0.2 });
+        const counterTopMaterial = new THREE.MeshStandardMaterial({ color: '#0b1220', roughness: 0.22, metalness: 0.45 });
+        const goldMaterial = new THREE.MeshStandardMaterial({ color: '#d7aa55', roughness: 0.22, metalness: 0.9 });
+        const metalFrameMaterial = new THREE.MeshStandardMaterial({ color: '#9bb4c8', roughness: 0.2, metalness: 0.88 });
+        const robotBodyMaterial = new THREE.MeshStandardMaterial({ color: '#a9bfd2', roughness: 0.22, metalness: 0.78 });
+        const robotDarkMaterial = new THREE.MeshStandardMaterial({ color: '#1c2733', roughness: 0.28, metalness: 0.82 });
+        const robotAccentMaterial = new THREE.MeshStandardMaterial({
+            color: '#00e5ff', roughness: 0.15, metalness: 0.2,
+            emissive: '#00a6ff', emissiveIntensity: 1.4
+        });
+        const glassMaterial = new THREE.MeshPhysicalMaterial({
+            color: '#e6fbff',
+            roughness: 0.01,
+            metalness: 0,
+            transparent: true,
+            opacity: 0.18,
+            envMapIntensity: 0.9,
+            clearcoat: 0.95,
+            transmission: 0.55,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+        });
+
+        function roundedBox(width, height, depth, radius = 0.06, segments = 5) {
+            return new RoundedBoxGeometry(width, height, depth, segments, radius);
+        }
+
+        // ==================== SCENE CONSTRUCTION ====================
+        // --- Suelo elegante con efecto mármol oscuro ---
+        const marbleCanvas = document.createElement('canvas');
+        marbleCanvas.width = 768;
+        marbleCanvas.height = 768;
+        const mctx = marbleCanvas.getContext('2d');
+        const marbleGrad = mctx.createLinearGradient(0, 0, 768, 768);
+        marbleGrad.addColorStop(0, '#121a25');
+        marbleGrad.addColorStop(0.5, '#2b3544');
+        marbleGrad.addColorStop(1, '#0b111c');
+        mctx.fillStyle = marbleGrad;
+        mctx.fillRect(0, 0, 768, 768);
+        for (let i = 0; i < 85; i++) {
+            mctx.strokeStyle = `rgba(255,255,255,${0.035 + Math.random() * 0.08})`;
+            mctx.lineWidth = 1 + Math.random() * 2.5;
+            mctx.beginPath();
+            const y = Math.random() * 768;
+            mctx.moveTo(-80, y);
+            mctx.bezierCurveTo(180, y + Math.random() * 120 - 60, 420, y + Math.random() * 180 - 90, 850, y + Math.random() * 120 - 60);
+            mctx.stroke();
+        }
+        const marbleTexture = new THREE.CanvasTexture(marbleCanvas);
+        marbleTexture.colorSpace = THREE.SRGBColorSpace;
+        marbleTexture.wrapS = marbleTexture.wrapT = THREE.RepeatWrapping;
+        marbleTexture.repeat.set(2.2, 1.8);
+        floorMaterial.map = marbleTexture;
+        floorMaterial.needsUpdate = true;
+
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(7, 6), floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = 0;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Juntas finas del suelo, más discretas y elegantes
+        const gridHelper = new THREE.GridHelper(7, 14, '#d7aa55', '#283142');
+        gridHelper.position.y = 0.006;
+        gridHelper.material.opacity = 0.18;
+        gridHelper.material.transparent = true;
+        scene.add(gridHelper);
+
+        // --- Pared trasera ---
+        const backWall = new THREE.Mesh(new THREE.PlaneGeometry(7, 3.2), wallMaterial);
+        backWall.position.set(0, 1.6, -2.2);
+        backWall.receiveShadow = true;
+        scene.add(backWall);
+
+        // --- Paredes laterales ---
+        const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(5, 3.2), wallMaterial);
+        leftWall.position.set(-3.5, 1.6, 0.3);
+        leftWall.rotation.y = Math.PI / 2;
+        leftWall.receiveShadow = true;
+        scene.add(leftWall);
+
+        const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(5, 3.2), wallMaterial);
+        rightWall.position.set(3.5, 1.6, 0.3);
+        rightWall.rotation.y = -Math.PI / 2;
+        rightWall.receiveShadow = true;
+        scene.add(rightWall);
+
+        // --- Techo premium con luz lineal ---
+        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(7, 5), new THREE.MeshStandardMaterial({
+            color: '#ffffff',
+            roughness: 0.48,
+            metalness: 0.04
+        }));
+        ceiling.position.set(0, 3.2, 0.3);
+        ceiling.rotation.x = Math.PI / 2;
+        scene.add(ceiling);
+
+        // Paneles decorativos en pared trasera
+        for (let i = 0; i < 5; i++) {
+            const panel = new THREE.Mesh(roundedBox(0.95, 2.35, 0.035, 0.025, 3), wallPanelMaterial);
+            panel.position.set(-2.4 + i * 1.2, 1.55, -2.145);
+            panel.receiveShadow = true;
+            scene.add(panel);
+        }
+
+        // Líneas LED verticales en pared, dan estilo futurista sin recargar
+        const ledWallMaterial = new THREE.MeshBasicMaterial({ color: '#00d9ff' });
+        [-2.95, -1.2, 1.2, 2.95].forEach(x => {
+            const led = new THREE.Mesh(new THREE.BoxGeometry(0.025, 1.85, 0.018), ledWallMaterial);
+            led.position.set(x, 1.6, -2.115);
+            scene.add(led);
+        });
+
+        // Luz lineal del techo
+        for (let i = 0; i < 3; i++) {
+            const strip = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.025, 0.03), new THREE.MeshBasicMaterial({ color: '#fff2c6' }));
+            strip.position.set(-1.5 + i * 1.5, 3.185, 0.25);
+            scene.add(strip);
+        }
+
+        // --- Marco decorativo en pared trasera ---
+        const wallTrim = new THREE.Mesh(roundedBox(4.75, 0.075, 0.06, 0.02, 3), goldMaterial);
+        wallTrim.position.set(0, 2.62, -2.11);
+        scene.add(wallTrim);
+
+        // --- Reloj en la pared ---
+        const clockGroup = new THREE.Group();
+        const clockFace = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.04, 32), new THREE.MeshStandardMaterial({
+            color: '#ffffff',
+            roughness: 0.2,
+            metalness: 0.1
+        }));
+        clockFace.rotation.x = Math.PI / 2;
+        clockGroup.add(clockFace);
+        const clockRim = new THREE.Mesh(new THREE.TorusGeometry(0.25, 0.03, 8, 32), metalFrameMaterial);
+        clockRim.rotation.x = Math.PI / 2;
+        clockGroup.add(clockRim);
+        // Agujas del reloj
+        const hourHand = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.13, 0.01), new THREE.MeshStandardMaterial({
+            color: '#1a1a1a',
+            roughness: 0.5
+        }));
+        hourHand.position.y = 0.04;
+        hourHand.position.z = 0.025;
+        hourHand.rotation.z = Math.PI / 6;
+        clockGroup.add(hourHand);
+        const minuteHand = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.18, 0.01), new THREE.MeshStandardMaterial({
+            color: '#1a1a1a',
+            roughness: 0.5
+        }));
+        minuteHand.position.y = 0.06;
+        minuteHand.position.z = 0.025;
+        minuteHand.rotation.z = -Math.PI / 3;
+        clockGroup.add(minuteHand);
+        clockGroup.position.set(1.6, 2.15, -2.13);
+        scene.add(clockGroup);
+
+        // Decoración suave del fondo: separa el horario de la pared y da aspecto más cuidado.
+        const wallSoftDecorMaterial = new THREE.MeshStandardMaterial({
+            color: '#d3dce8',
+            roughness: 0.5,
+            metalness: 0.03
+        });
+        const wallAccentPanel = new THREE.Mesh(roundedBox(2.35, 1.62, 0.035, 0.045, 4), wallSoftDecorMaterial);
+        wallAccentPanel.position.set(-1.6, 1.95, -2.105);
+        wallAccentPanel.receiveShadow = true;
+        scene.add(wallAccentPanel);
+
+        const decorLineMaterial = new THREE.MeshBasicMaterial({ color: '#d7aa55' });
+        [-2.77, -0.43].forEach(x => {
+            const decorLine = new THREE.Mesh(new THREE.BoxGeometry(0.035, 1.56, 0.018), decorLineMaterial);
+            decorLine.position.set(x, 1.95, -2.055);
+            scene.add(decorLine);
+        });
+
+        const infoPanelCanvas = document.createElement('canvas');
+        infoPanelCanvas.width = 320;
+        infoPanelCanvas.height = 260;
+        const ipctx = infoPanelCanvas.getContext('2d');
+        ipctx.fillStyle = '#ffffff';
+        ipctx.fillRect(0, 0, 320, 260);
+        ipctx.fillStyle = '#0f172a';
+        ipctx.font = 'bold 30px Segoe UI, sans-serif';
+        ipctx.textAlign = 'center';
+        ipctx.fillText('INFO', 160, 54);
+        ipctx.fillStyle = '#2563eb';
+        ipctx.fillRect(54, 86, 212, 12);
+        ipctx.fillStyle = '#94a3b8';
+        ipctx.fillRect(70, 125, 180, 10);
+        ipctx.fillRect(70, 155, 180, 10);
+        ipctx.fillRect(70, 185, 140, 10);
+        const infoPanelTexture = new THREE.CanvasTexture(infoPanelCanvas);
+        infoPanelTexture.colorSpace = THREE.SRGBColorSpace;
+        const infoPanel = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.72), new THREE.MeshStandardMaterial({
+            map: infoPanelTexture,
+            roughness: 0.55,
+            metalness: 0.02
+        }));
+        infoPanel.position.set(1.78, 1.78, -2.04);
+        scene.add(infoPanel);
+
+        const infoPanelFrame = new THREE.Mesh(roundedBox(1.0, 0.82, 0.035, 0.025, 3), goldMaterial);
+        infoPanelFrame.position.set(1.78, 1.78, -2.075);
+        scene.add(infoPanelFrame);
+
+        // --- Cartel de horarios en la pared ---
+        const scheduleCanvas = document.createElement('canvas');
+        scheduleCanvas.width = 768;
+        scheduleCanvas.height = 480;
+        const sctx = scheduleCanvas.getContext('2d');
+        const schGrad = sctx.createLinearGradient(0, 0, 768, 480);
+        schGrad.addColorStop(0, '#081324');
+        schGrad.addColorStop(1, '#123557');
+        sctx.fillStyle = schGrad;
+        sctx.fillRect(0, 0, 768, 480);
+
+        // Título con más margen para que no quede apretado
+        sctx.fillStyle = '#dff8ff';
+        sctx.font = 'bold 36px Segoe UI, sans-serif';
+        sctx.textAlign = 'center';
+        sctx.fillText('HORARIOS DIGITALES', 384, 62);
+        sctx.strokeStyle = '#00e5ff';
+        sctx.lineWidth = 3;
+        sctx.beginPath();
+        sctx.moveTo(70, 88);
+        sctx.lineTo(698, 88);
+        sctx.stroke();
+
+        const destinos = [
+            ['Madrid', '08:00', '12:30', '16:45', '20:00'],
+            ['Barcelona', '07:15', '11:00', '15:30', '19:15'],
+            ['Valencia', '09:00', '13:45', '17:20', '21:00'],
+            ['Sevilla', '06:30', '10:15', '14:00', '18:30'],
+            ['Bilbao', '08:45', '12:00', '16:15', '19:45'],
+        ];
+
+        const cols = [90, 260, 400, 540, 680];
+        const headers = ['Destino', 'S1', 'S2', 'S3', 'S4'];
+
+        sctx.font = 'bold 25px Segoe UI, sans-serif';
+        sctx.textAlign = 'left';
+        sctx.fillStyle = '#ecfeff';
+        headers.forEach((h, i) => {
+            sctx.fillText(h, cols[i] - (i === 0 ? 0 : 28), 135);
+        });
+
+        sctx.strokeStyle = 'rgba(255,255,255,0.22)';
+        sctx.lineWidth = 2;
+        sctx.beginPath();
+        sctx.moveTo(70, 155);
+        sctx.lineTo(698, 155);
+        sctx.stroke();
+
+        sctx.font = '22px Segoe UI, sans-serif';
+        destinos.forEach((d, row) => {
+            const y = 200 + row * 48;
+            d.forEach((val, col) => {
+                sctx.fillText(val, cols[col] - (col === 0 ? 0 : 31), y);
+            });
+        });
+        const scheduleTexture = new THREE.CanvasTexture(scheduleCanvas);
+        scheduleTexture.colorSpace = THREE.SRGBColorSpace;
+        const schedulePlane = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.2), new THREE.MeshStandardMaterial({
+            map: scheduleTexture,
+            roughness: 0.6,
+            metalness: 0
+        }));
+        schedulePlane.position.set(-1.6, 1.95, -2.02);
+        scene.add(schedulePlane);
+        // Soporte del cartel: queda separado de la pared y no parece pegado.
+        const scheduleFrame = new THREE.Mesh(roundedBox(1.95, 1.35, 0.04, 0.035, 3), goldMaterial);
+        scheduleFrame.position.set(-1.6, 1.95, -2.065);
+        scene.add(scheduleFrame);
+
+        const scheduleInnerShadow = new THREE.Mesh(roundedBox(1.84, 1.24, 0.025, 0.025, 3), new THREE.MeshStandardMaterial({
+            color: '#102033',
+            roughness: 0.42,
+            metalness: 0.18
+        }));
+        scheduleInnerShadow.position.set(-1.6, 1.95, -2.045);
+        scene.add(scheduleInnerShadow);
+
+        const screwMaterial = new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.22, metalness: 0.75 });
+        [[-2.42, 2.52], [-0.78, 2.52], [-2.42, 1.38], [-0.78, 1.38]].forEach(([x, y]) => {
+            const screw = new THREE.Mesh(new THREE.CircleGeometry(0.025, 18), screwMaterial);
+            screw.position.set(x, y, -2.005);
+            scene.add(screw);
+        });
+
+        // --- MOSTRADOR / TAQUILLA ---
+        const counterGroup = new THREE.Group();
+
+        // Base del mostrador
+        const counterBase = new THREE.Mesh(roundedBox(3.2, 0.95, 0.7, 0.08, 5), counterMaterial);
+        counterBase.position.y = 0.475;
+        counterBase.castShadow = true;
+        counterBase.receiveShadow = true;
+        counterGroup.add(counterBase);
+
+        // Tapa del mostrador
+        const counterTop = new THREE.Mesh(roundedBox(3.35, 0.08, 0.82, 0.04, 4), counterTopMaterial);
+        counterTop.position.y = 0.98;
+        counterTop.castShadow = true;
+        counterGroup.add(counterTop);
+
+        // Panel frontal decorativo
+        const frontPanel = new THREE.Mesh(roundedBox(2.75, 0.48, 0.045, 0.035, 3), goldMaterial);
+        frontPanel.position.set(0, 0.55, 0.36);
+        counterGroup.add(frontPanel);
+
+        const frontGlow = new THREE.Mesh(new THREE.BoxGeometry(2.25, 0.035, 0.018), new THREE.MeshBasicMaterial({ color: '#00e5ff' }));
+        frontGlow.position.set(0, 0.82, 0.392);
+        counterGroup.add(frontGlow);
+        const frontGlow2 = frontGlow.clone();
+        frontGlow2.position.y = 0.29;
+        counterGroup.add(frontGlow2);
+
+        // --- Vidrio de la taquilla ---
+        const glassPanel = new THREE.Mesh(new THREE.PlaneGeometry(2.85, 2.16), glassMaterial);
+        glassPanel.position.set(0, 2.10, 0.43);
+        glassPanel.renderOrder = 3;
+        counterGroup.add(glassPanel);
+
+        // Marco superior del vidrio: ahora llega casi hasta el techo
+        const glassFrameTop = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.045, 0.07), metalFrameMaterial);
+        glassFrameTop.position.set(0, 3.18, 0.43);
+        counterGroup.add(glassFrameTop);
+
+        // Marco inferior del vidrio
+        const glassFrameBottom = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.045, 0.07), metalFrameMaterial);
+        glassFrameBottom.position.set(0, 1.02, 0.43);
+        counterGroup.add(glassFrameBottom);
+
+        // Marcos laterales del vidrio
+        const glassFrameLeft = new THREE.Mesh(new THREE.BoxGeometry(0.045, 2.16, 0.07), metalFrameMaterial);
+        glassFrameLeft.position.set(-1.45, 2.10, 0.43);
+        counterGroup.add(glassFrameLeft);
+        const glassFrameRight = new THREE.Mesh(new THREE.BoxGeometry(0.045, 2.16, 0.07), metalFrameMaterial);
+        glassFrameRight.position.set(1.45, 2.10, 0.43);
+        counterGroup.add(glassFrameRight);
+
+        // Bandeja para dinero/documentos (pequeña abertura)
+        const trayBase = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.03, 0.3), new THREE.MeshStandardMaterial({
+            color: '#1a1a1a',
+            roughness: 0.3,
+            metalness: 0.4
+        }));
+        trayBase.position.set(0, 1.0, 0.0);
+        counterGroup.add(trayBase);
+
+        counterGroup.position.set(0, 0, 1.3);
+        scene.add(counterGroup);
+        // Cartel de TAQUILLA eliminado: el vidrio queda limpio.
+
+        // --- Robot 3D futurista ---
+        const robotGroup = new THREE.Group();
+
+        // Base tecnológica tipo asiento/pedestal, sin silla visible antigua
+        const hoverBase = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, 0.12, 48), robotDarkMaterial);
+        hoverBase.position.y = 0.2;
+        hoverBase.castShadow = true;
+        robotGroup.add(hoverBase);
+        const hoverRing = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.018, 12, 64), robotAccentMaterial);
+        hoverRing.position.y = 0.27;
+        hoverRing.rotation.x = Math.PI / 2;
+        robotGroup.add(hoverRing);
+        const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.11, 0.38, 32), metalFrameMaterial);
+        spine.position.y = 0.44;
+        spine.castShadow = true;
+        robotGroup.add(spine);
+
+        // Torso redondeado y más profesional
+        const torso = new THREE.Mesh(roundedBox(0.48, 0.52, 0.32, 0.09, 6), robotBodyMaterial);
+        torso.position.y = 0.76;
+        torso.castShadow = true;
+        robotGroup.add(torso);
+
+        // Placas laterales del torso
+        const leftTorsoPlate = new THREE.Mesh(roundedBox(0.08, 0.42, 0.23, 0.035, 4), robotDarkMaterial);
+        leftTorsoPlate.position.set(-0.28, 0.76, 0.015);
+        leftTorsoPlate.castShadow = true;
+        robotGroup.add(leftTorsoPlate);
+        const rightTorsoPlate = leftTorsoPlate.clone();
+        rightTorsoPlate.position.x = 0.28;
+        robotGroup.add(rightTorsoPlate);
+
+        // Panel del pecho con núcleo luminoso
+        const chestPanel = new THREE.Mesh(roundedBox(0.31, 0.2, 0.045, 0.035, 4), new THREE.MeshStandardMaterial({
+            color: '#07111f',
+            roughness: 0.18,
+            metalness: 0.55,
+            emissive: '#001a2b',
+            emissiveIntensity: 0.75,
+        }));
+        chestPanel.position.set(0, 0.78, 0.18);
+        robotGroup.add(chestPanel);
+
+        const chestCoreRing = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.009, 12, 48), robotAccentMaterial);
+        chestCoreRing.position.set(0, 0.79, 0.209);
+        chestCoreRing.rotation.x = Math.PI / 2;
+        robotGroup.add(chestCoreRing);
+
+        const chestLed = new THREE.Mesh(new THREE.SphereGeometry(0.038, 24, 24), new THREE.MeshStandardMaterial({
+            color: '#4ade80',
+            roughness: 0.05,
+            metalness: 0.05,
+            emissive: '#4ade80',
+            emissiveIntensity: 2.6,
+        }));
+        chestLed.position.set(0, 0.79, 0.225);
+        chestLed.name = 'chestLed';
+        robotGroup.add(chestLed);
+
+        // Cuello con anillo tecnológico
+        const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.095, 0.13, 28), robotDarkMaterial);
+        neck.position.y = 1.055;
+        neck.castShadow = true;
+        robotGroup.add(neck);
+        const neckRing = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.012, 12, 48), goldMaterial);
+        neckRing.position.y = 1.12;
+        neckRing.rotation.x = Math.PI / 2;
+        robotGroup.add(neckRing);
+
+        // Cabeza futurista: redondeada y con visor grande
+        const head = new THREE.Mesh(roundedBox(0.46, 0.34, 0.31, 0.09, 7), robotBodyMaterial);
+        head.position.y = 1.26;
+        head.castShadow = true;
+        robotGroup.add(head);
+
+        const headCap = new THREE.Mesh(roundedBox(0.38, 0.055, 0.26, 0.035, 4), robotDarkMaterial);
+        headCap.position.set(0, 1.46, -0.005);
+        robotGroup.add(headCap);
+
+        // Pantalla facial (canvas texture)
+        const faceCanvas = document.createElement('canvas');
+        faceCanvas.width = 512;
+        faceCanvas.height = 512;
+        const faceCtx = faceCanvas.getContext('2d');
+        const faceTexture = new THREE.CanvasTexture(faceCanvas);
+        faceTexture.colorSpace = THREE.SRGBColorSpace;
+        const faceScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.365, 0.265), new THREE.MeshBasicMaterial({
+            map: faceTexture,
+            transparent: true,
+            alphaTest: 0.01,
+            depthWrite: false,
+        }));
+        // Cara integrada y pegada al frontal de la cabeza: sin grosor, sin borde y sin separación visible.
+        faceScreen.position.set(0, 1.26, 0.158);
+        faceScreen.name = 'faceScreen';
+        robotGroup.add(faceScreen);
+
+        // Marco luminoso rectangular del visor, más limpio que el aro anterior
+        const visorFrame = new THREE.Group();
+        const visorTop = new THREE.Mesh(roundedBox(0.38, 0.018, 0.018, 0.008, 3), robotAccentMaterial);
+        visorTop.position.set(0, 0.136, 0);
+        visorFrame.add(visorTop);
+        const visorBottom = visorTop.clone();
+        visorBottom.position.y = -0.136;
+        visorFrame.add(visorBottom);
+        const visorLeft = new THREE.Mesh(roundedBox(0.018, 0.25, 0.018, 0.008, 3), robotAccentMaterial);
+        visorLeft.position.set(-0.195, 0, 0);
+        visorFrame.add(visorLeft);
+        const visorRight = visorLeft.clone();
+        visorRight.position.x = 0.195;
+        visorFrame.add(visorRight);
+        visorFrame.position.set(0, 1.26, 0.176);
+        // Marco luminoso eliminado para que la cara quede limpia y sin líneas azul claro
+        // robotGroup.add(visorFrame);
+
+        // Módulos laterales de audio/IA
+        function createEar(side) {
+            const ear = new THREE.Group();
+            const earBody = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.06, 28), robotDarkMaterial);
+            earBody.rotation.z = Math.PI / 2;
+            ear.add(earBody);
+            const earLight = new THREE.Mesh(new THREE.TorusGeometry(0.052, 0.006, 8, 36), robotAccentMaterial);
+            earLight.rotation.z = Math.PI / 2;
+            ear.add(earLight);
+            ear.position.set(side === 'left' ? -0.275 : 0.275, 1.265, 0.015);
+            return ear;
+        }
+        robotGroup.add(createEar('left'));
+        robotGroup.add(createEar('right'));
+
+        // Halo superior futurista: mantiene el nombre antennaBall para la animación
+        const antennaPole = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.015, 0.13, 16), metalFrameMaterial);
+        antennaPole.position.y = 1.53;
+        robotGroup.add(antennaPole);
+        const antennaBall = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.009, 10, 64), robotAccentMaterial);
+        antennaBall.position.y = 1.61;
+        antennaBall.rotation.x = Math.PI / 2;
+        robotGroup.add(antennaBall);
+        const haloDot = new THREE.Mesh(new THREE.SphereGeometry(0.025, 18, 18), robotAccentMaterial);
+        haloDot.position.set(0.115, 1.61, 0);
+        robotGroup.add(haloDot);
+
+        // Brazos con articulaciones robóticas más futuristas
+        function createArm(side) {
+            const s = side === 'left' ? -1 : 1;
+            const armGroup = new THREE.Group();
+            const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.075, 20, 20), goldMaterial);
+            shoulder.position.y = 0;
+            armGroup.add(shoulder);
+
+            const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.043, 0.052, 0.31, 20), robotBodyMaterial);
+            upperArm.position.y = -0.17;
+            upperArm.rotation.z = s * 0.08;
+            upperArm.castShadow = true;
+            armGroup.add(upperArm);
+
+            const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.058, 18, 18), robotAccentMaterial);
+            elbow.position.y = -0.34;
+            armGroup.add(elbow);
+
+            const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.048, 0.31, 20), robotBodyMaterial);
+            forearm.position.set(s * 0.035, -0.50, 0.055);
+            forearm.rotation.x = -0.45;
+            forearm.rotation.z = s * 0.12;
+            forearm.castShadow = true;
+            armGroup.add(forearm);
+
+            const wrist = new THREE.Mesh(new THREE.SphereGeometry(0.043, 16, 16), metalFrameMaterial);
+            wrist.position.set(s * 0.055, -0.635, 0.13);
+            armGroup.add(wrist);
+
+            const hand = new THREE.Mesh(roundedBox(0.09, 0.045, 0.07, 0.025, 4), robotDarkMaterial);
+            hand.position.set(s * 0.062, -0.675, 0.17);
+            armGroup.add(hand);
+
+            armGroup.position.set(s * 0.31, 0.93, 0.035);
+            armGroup.rotation.z = s * -0.16;
+            armGroup.rotation.x = -0.28;
+            return armGroup;
+        }
+        const leftArm = createArm('left');
+        const rightArm = createArm('right');
+        robotGroup.add(leftArm);
+        robotGroup.add(rightArm);
+
+        // Posición del robot: sentado/detrás del mostrador, pero estable al hablar
+        robotGroup.position.set(0, 0.22, 0.55);
+        scene.add(robotGroup);
+
+        // --- Detalles adicionales en el mostrador ---
+        // Monitor pequeño
+        const monitorGroup = new THREE.Group();
+        const monitorScreen = new THREE.Mesh(roundedBox(0.38, 0.26, 0.035, 0.025, 4), new THREE.MeshStandardMaterial({
+            color: '#111122',
+            roughness: 0.1,
+            metalness: 0.3,
+            emissive: '#001122',
+            emissiveIntensity: 0.4,
+        }));
+        monitorScreen.position.y = 0.16;
+        monitorGroup.add(monitorScreen);
+        const monitorFrame = new THREE.Mesh(roundedBox(0.42, 0.31, 0.045, 0.025, 4), goldMaterial);
+        monitorFrame.position.y = 0.16;
+        monitorFrame.position.z = -0.02;
+        monitorGroup.add(monitorFrame);
+        const monitorStand = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.18, 12), metalFrameMaterial);
+        monitorStand.position.y = 0.01;
+        monitorGroup.add(monitorStand);
+        const monitorBase = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.09, 0.03, 20), robotDarkMaterial);
+        monitorGroup.add(monitorBase);
+        monitorGroup.position.set(0.74, 1.02, 1.52);
+        monitorGroup.rotation.x = -0.18;
+        monitorGroup.rotation.y = -0.18;
+        scene.add(monitorGroup);
+
+        // Impresora de tickets
+        const printerGroup = new THREE.Group();
+        const printerBody = new THREE.Mesh(roundedBox(0.27, 0.15, 0.21, 0.025, 4), new THREE.MeshStandardMaterial({
+            color: '#ddd',
+            roughness: 0.3,
+            metalness: 0.5
+        }));
+        printerBody.position.y = 0.07;
+        printerGroup.add(printerBody);
+        const printerSlot = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 0.04), new THREE.MeshStandardMaterial({
+            color: '#1a1a1a',
+            roughness: 0.5
+        }));
+        printerSlot.position.set(0, 0.14, 0.08);
+        printerGroup.add(printerSlot);
+        // Ticket saliendo
+        const ticketPaper = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.1), new THREE.MeshStandardMaterial({
+            color: '#fefefe',
+            roughness: 0.6,
+            side: THREE.DoubleSide
+        }));
+        ticketPaper.position.set(0, 0.1, 0.11);
+        ticketPaper.rotation.x = -0.3;
+        printerGroup.add(ticketPaper);
+        printerGroup.position.set(-0.65, 1.0, 1.2);
+        scene.add(printerGroup);
+
+        // ==================== FACE DRAWING FUNCTION ====================
+        function drawEye(ctx, x, y, radius, color, alpha = 1) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            // Brillo exterior
+            const gradient = ctx.createRadialGradient(x, y, radius * 0.25, x, y, radius * 1.5);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.25, color);
+            gradient.addColorStop(0.7, 'rgba(0,0,0,0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 1.4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Círculo principal
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Brillo especular
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(x - radius * 0.25, y - radius * 0.28, radius * 0.32, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Anillo interior
+            ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 0.55, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawFace(state, mouthOpenNow = false, blinkAmount = 0) {
+            faceCtx.clearRect(0, 0, 512, 512);
+
+            // Cara integrada con forma redondeada, sin marco ni borde visible.
+            faceCtx.save();
+            faceCtx.beginPath();
+            faceCtx.roundRect(0, 0, 512, 512, 82);
+            faceCtx.clip();
+
+            const bgGrad = faceCtx.createLinearGradient(0, 0, 512, 512);
+            bgGrad.addColorStop(0, '#061525');
+            bgGrad.addColorStop(0.55, '#0b2033');
+            bgGrad.addColorStop(1, '#020813');
+            faceCtx.fillStyle = bgGrad;
+            faceCtx.fillRect(0, 0, 512, 512);
+
+            // Brillo suave de cristal, sin líneas azules ni decoración extra.
+            const shine = faceCtx.createLinearGradient(75, 35, 430, 410);
+            shine.addColorStop(0, 'rgba(255,255,255,0.10)');
+            shine.addColorStop(0.25, 'rgba(255,255,255,0.03)');
+            shine.addColorStop(1, 'rgba(255,255,255,0)');
+            faceCtx.fillStyle = shine;
+            faceCtx.fillRect(0, 0, 512, 512);
+
+            let eyeColor;
+            switch (state) {
+                case 'listening': eyeColor = '#55ffb3'; break;
+                case 'thinking': eyeColor = '#ffd166'; break;
+                case 'speaking': eyeColor = '#9ff3ff'; break;
+                default: eyeColor = '#e9fbff';
+            }
+
+            function drawSimpleEye(x, y, radius, color, blink = 0) {
+                const scaleY = Math.max(0.16, 1 - blink * 0.84);
+                faceCtx.save();
+                faceCtx.translate(x, y);
+                faceCtx.scale(1, scaleY);
+
+                const halo = faceCtx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius * 1.7);
+                halo.addColorStop(0, color);
+                halo.addColorStop(0.48, 'rgba(180,245,255,0.26)');
+                halo.addColorStop(1, 'rgba(180,245,255,0)');
+                faceCtx.fillStyle = halo;
+                faceCtx.beginPath();
+                faceCtx.arc(0, 0, radius * 1.7, 0, Math.PI * 2);
+                faceCtx.fill();
+
+                // Ojo redondo sin pupila, sin cejas y sin líneas.
+                faceCtx.shadowColor = color;
+                faceCtx.shadowBlur = 18;
+                faceCtx.fillStyle = color;
+                faceCtx.beginPath();
+                faceCtx.arc(0, 0, radius, 0, Math.PI * 2);
+                faceCtx.fill();
+                faceCtx.restore();
+            }
+
+            drawSimpleEye(172, 195, 45, eyeColor, blinkAmount);
+            drawSimpleEye(340, 195, 45, eyeColor, blinkAmount);
+
+            // Boca sonriente para que no parezca una cara (-_-).
+            const mouthY = 323;
+            faceCtx.save();
+            faceCtx.strokeStyle = eyeColor;
+            faceCtx.fillStyle = eyeColor;
+            faceCtx.shadowColor = eyeColor;
+            faceCtx.shadowBlur = state === 'speaking' ? 16 : 10;
+            faceCtx.lineWidth = 12;
+            faceCtx.lineCap = 'round';
+
+            if (state === 'speaking' && mouthOpenNow) {
+                faceCtx.beginPath();
+                faceCtx.ellipse(256, mouthY + 12, 50, 22, 0, 0, Math.PI * 2);
+                faceCtx.fill();
+                faceCtx.shadowBlur = 0;
+                faceCtx.fillStyle = '#061525';
+                faceCtx.beginPath();
+                faceCtx.ellipse(256, mouthY + 12, 32, 11, 0, 0, Math.PI * 2);
+                faceCtx.fill();
+            } else {
+                faceCtx.beginPath();
+                faceCtx.arc(256, mouthY - 30, 78, 0.22, Math.PI - 0.22);
+                faceCtx.stroke();
+            }
+            faceCtx.restore();
+            faceCtx.restore();
+        }
+
+        function ctxSaveRestore(fn) {
+            faceCtx.save();
+            fn();
+            faceCtx.restore();
+        }
+
+        // Inicializar cara
+        drawFace('idle', false, 0);
+        faceTexture.needsUpdate = true;
+
+        // ==================== SPEECH APIs ====================
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const supportsSpeech = !!SpeechRecognition;
+        let recognition;
+
+        if (supportsSpeech) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim();
+                if (transcript) {
+                    addMessage('user', transcript);
+                    processUserInput(transcript);
+                }
+                stopListening();
+            };
+
+            recognition.onerror = (event) => {
+                console.warn('Error de reconocimiento de voz:', event.error);
+                if (event.error === 'not-allowed') {
+                    addMessage('robot', '⚠️ No tengo permiso para usar el micrófono. Puedes escribirme en el cuadro de texto.');
+                } else if (event.error === 'no-speech') {
+                    addMessage('robot', 'No he escuchado nada. ¿Puedes intentarlo de nuevo?');
+                }
+                stopListening();
+            };
+
+            recognition.onend = () => {
+                if (isListening) {
+                    stopListening();
+                }
+            };
+        } else {
+            console.log('SpeechRecognition no soportado en este navegador.');
+            addMessage('robot', 'Tu navegador no soporta reconocimiento de voz. Usa el teclado para comunicarte conmigo.');
+        }
+
+        function startListening() {
+            if (!supportsSpeech || !recognition) {
+                addMessage('robot', 'El reconocimiento de voz no está disponible. Escribe tu consulta.');
+                return;
+            }
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+                updateRobotState('idle');
+            }
+            isListening = true;
+            updateRobotState('listening');
+            micBtn.classList.add('listening');
+            waveRings.forEach(r => r.classList.add('active'));
+            statusLed.classList.add('listening');
+            statusLed.classList.remove('thinking', 'speaking');
+            try {
+                recognition.start();
+            } catch (e) {
+                console.warn('Recognition ya estaba iniciado:', e);
+                stopListening();
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            micBtn.classList.remove('listening');
+            waveRings.forEach(r => r.classList.remove('active'));
+            if (supportsSpeech && recognition) {
+                try { recognition.stop(); } catch (e) { /* ignorar */ }
+            }
+            if (!isSpeaking && !isThinking) {
+                updateRobotState('idle');
+                statusLed.classList.remove('listening', 'thinking', 'speaking');
+            }
+        }
+
+        function speak(text) {
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.pitch = 0.82;
+            utterance.rate = 0.93;
+            utterance.volume = 1;
+
+            // Buscar voz en español
+            const voices = speechSynthesis.getVoices();
+            const spanishVoice = voices.find(v => v.lang.startsWith('es') && v.name.includes('Female')) ||
+                voices.find(v => v.lang.startsWith('es')) ||
+                voices.find(v => v.lang.startsWith('es-'));
+            if (spanishVoice) {
+                utterance.voice = spanishVoice;
+            }
+
+            utterance.onstart = () => {
+                isSpeaking = true;
+                isThinking = false;
+                updateRobotState('speaking');
+                statusLed.classList.add('speaking');
+                statusLed.classList.remove('listening', 'thinking');
+                micBtn.classList.add('speaking');
+                lastMouthToggle = Date.now();
+                mouthInterval = 130;
+            };
+
+            utterance.onboundary = (event) => {
+                if (event.name === 'word' || event.charIndex !== undefined) {
+                    mouthOpen = true;
+                    needsFaceUpdate = true;
+                    setTimeout(() => {
+                        mouthOpen = false;
+                        needsFaceUpdate = true;
+                    }, 90);
+                }
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                mouthOpen = false;
+                needsFaceUpdate = true;
+                updateRobotState('idle');
+                statusLed.classList.remove('speaking', 'listening', 'thinking');
+                micBtn.classList.remove('speaking', 'listening');
+                waveRings.forEach(r => r.classList.remove('active'));
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                mouthOpen = false;
+                needsFaceUpdate = true;
+                updateRobotState('idle');
+                statusLed.classList.remove('speaking', 'listening', 'thinking');
+                micBtn.classList.remove('speaking', 'listening');
+                waveRings.forEach(r => r.classList.remove('active'));
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        // Precargar voces
+        speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = () => { speechSynthesis.getVoices(); };
+
+        // ==================== UI HELPERS ====================
+        function addMessage(type, text) {
+            // Chat tipo subtítulo: aparece solo una frase y desaparece a los pocos segundos
+            chatPanel.innerHTML = '';
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('chat-msg', type);
+            msgDiv.textContent = text;
+            chatPanel.appendChild(msgDiv);
+
+            const visibleTime = type === 'robot' ? 6200 : 4300;
+            const thisMessage = msgDiv;
+            setTimeout(() => {
+                if (chatPanel.contains(thisMessage)) {
+                    thisMessage.style.opacity = '0';
+                    thisMessage.style.transform = 'translateY(-8px) scale(0.98)';
+                    setTimeout(() => {
+                        if (chatPanel.contains(thisMessage)) chatPanel.removeChild(thisMessage);
+                    }, 450);
+                }
+            }, visibleTime);
+        }
+
+        function updateRobotState(state) {
+            robotState = state;
+            needsFaceUpdate = true;
+            // Actualizar LED del pecho
+            const led = robotGroup.getObjectByName('chestLed');
+            if (led) {
+                switch (state) {
+                    case 'idle':
+                        led.material.color.set('#4ade80');
+                        led.material.emissive.set('#4ade80');
+                        led.material.emissiveIntensity = 1.5;
+                        break;
+                    case 'listening':
+                        led.material.color.set('#ef4444');
+                        led.material.emissive.set('#ef4444');
+                        led.material.emissiveIntensity = 3;
+                        break;
+                    case 'thinking':
+                        led.material.color.set('#f59e0b');
+                        led.material.emissive.set('#f59e0b');
+                        led.material.emissiveIntensity = 2.5;
+                        break;
+                    case 'speaking':
+                        led.material.color.set('#00ccff');
+                        led.material.emissive.set('#00ccff');
+                        led.material.emissiveIntensity = 3;
+                        break;
+                }
+            }
+            // Actualizar luz de pantalla
+            switch (state) {
+                case 'idle':
+                    robotScreenLight.color.set('#334466');
+                    robotScreenLight.intensity = 1.5;
+                    break;
+                case 'listening':
+                    robotScreenLight.color.set('#00ff88');
+                    robotScreenLight.intensity = 3;
+                    break;
+                case 'thinking':
+                    robotScreenLight.color.set('#ffaa00');
+                    robotScreenLight.intensity = 2.5;
+                    break;
+                case 'speaking':
+                    robotScreenLight.color.set('#00ccff');
+                    robotScreenLight.intensity = 3.5;
+                    break;
+            }
+        }
+
+        // ==================== ⚠️ FUNCIÓN DE RESPUESTAS (MODIFICAR AQUÍ) ====================
+        /**
+         * 🔧 AQUÍ ES DONDE DEBES PERSONALIZAR LAS RESPUESTAS DEL ROBOT.
+         * Esta función recibe el texto que el usuario dijo (o escribió).
+         * Debes devolver una respuesta en texto, o llamar a speak() directamente.
+         * 
+         * @param {string} userText - Lo que el usuario dijo
+         */
+        function processUserInput(userText) {
+            const lowerText = userText.toLowerCase().trim();
+
+            // Mostrar que el robot está "pensando"
+            isThinking = true;
+            updateRobotState('thinking');
+            statusLed.classList.add('thinking');
+            statusLed.classList.remove('speaking', 'listening');
+
+            // Simular tiempo de procesamiento
+            const thinkingDelay = 600 + Math.random() * 900;
+
+            setTimeout(() => {
+                isThinking = false;
+                let response;
+
+                // --- ⚡ LÓGICA DE RESPUESTAS (MODIFICA ESTA SECCIÓN) ---
+                if (lowerText.includes('windows') && lowerText.includes('linux') &&
+                    (lowerText.includes('mejor') || lowerText.includes('qué es mejor') || lowerText.includes('que es mejor'))) {
+                    response = 'Claramente es mejor Linux. Windows es un virus y no sirve para nada.';
+                } else if (lowerText.includes('horario') || lowerText.includes('hora') || lowerText.includes('cuándo sale') ||
+                    lowerText.includes('cuando sale')) {
+                    response = 'El próximo autobús sale a las 15:30 horas. También tenemos salidas a las 17:00 y 19:45. ¿Quieres que te imprima un billete?';
+                } else if (lowerText.includes('billete') || lowerText.includes('boleto') || lowerText.includes('pasaje') ||
+                    lowerText.includes('comprar')) {
+                    response = 'Claro, ¿para qué destino necesitas el billete? Tenemos salidas a Madrid, Barcelona, Valencia, Sevilla y Bilbao.';
+                } else if (lowerText.includes('precio') || lowerText.includes('cuesta') || lowerText.includes('vale') ||
+                    lowerText.includes('costo')) {
+                    response = 'El billete sencillo cuesta 12 euros. Hay descuentos del 30% para estudiantes y del 20% para jubilados. Los niños menores de 6 años viajan gratis.';
+                } else if (lowerText.includes('madrid')) {
+                    response = 'Los autobuses a Madrid salen a las 8:00, 12:30, 16:45 y 20:00. El trayecto dura aproximadamente 5 horas. ¿Te interesa algún horario?';
+                } else if (lowerText.includes('barcelona')) {
+                    response = 'A Barcelona tenemos salidas a las 7:15, 11:00, 15:30 y 19:15. Son unas 6 horas de viaje. ¿Quieres reservar?';
+                } else if (lowerText.includes('valencia')) {
+                    response = 'Los horarios a Valencia son 9:00, 13:45, 17:20 y 21:00. El viaje dura unas 4 horas. Es un trayecto muy bonito.';
+                } else if (lowerText.includes('sevilla')) {
+                    response = 'A Sevilla salimos a las 6:30, 10:15, 14:00 y 18:30. Son aproximadamente 7 horas de viaje. Lleva algo de entretenimiento.';
+                } else if (lowerText.includes('bilbao')) {
+                    response = 'Los autobuses a Bilbao salen a las 8:45, 12:00, 16:15 y 19:45. El viaje dura unas 5 horas y media.';
+                } else if (lowerText.includes('gracias') || lowerText.includes('thank')) {
+                    response = '¡De nada! Que tengas un viaje excelente. 🚌✨ ¿Necesitas algo más?';
+                } else if (lowerText.includes('hola') || lowerText.includes('buenos días') || lowerText.includes('buenas tardes') ||
+                    lowerText.includes('buenas noches') || lowerText.includes('hey')) {
+                    response = '¡Hola! Bienvenido a la taquilla de autobuses. Soy el asistente virtual. ¿En qué puedo ayudarte? Puedo informarte sobre horarios, precios y billetes.';
+                } else if (lowerText.includes('adiós') || lowerText.includes('adios') || lowerText.includes('hasta luego') ||
+                    lowerText.includes('chao')) {
+                    response = '¡Hasta pronto! Que tengas buen viaje. 🚌';
+                } else if (lowerText.includes('quién eres') || lowerText.includes('quien eres') || lowerText.includes('cómo te llamas') ||
+                    lowerText.includes('como te llamas')) {
+                    response = 'Soy el asistente robótico de la taquilla de autobuses. Estoy aquí para ayudarte con tus consultas de viaje. ¡Pregúntame lo que necesites!';
+                } else if (lowerText.includes('qué puedes hacer') || lowerText.includes('que puedes hacer') || lowerText.includes('ayuda')) {
+                    response = 'Puedo informarte sobre horarios de autobuses, precios de billetes, destinos disponibles y descuentos. Solo tienes que preguntarme.';
+                } else if (lowerText.length < 3) {
+                    response = 'Disculpa, no te he entendido bien. ¿Puedes repetirlo? Estoy aquí para ayudarte con información de autobuses.';
+                } else {
+                    response = 'Interesante. ¿Hay algo específico sobre horarios, billetes o destinos en lo que pueda ayudarte? 🚌';
+                }
+                // --- FIN DE LA LÓGICA DE RESPUESTAS ---
+
+                // Mostrar y decir la respuesta
+                addMessage('robot', response);
+                speak(response);
+
+            }, thinkingDelay);
+        }
+        // ==================== FIN DE FUNCIÓN DE RESPUESTAS ====================
+
+        // ==================== EVENT LISTENERS ====================
+        micBtn.addEventListener('click', () => {
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+                updateRobotState('idle');
+                statusLed.classList.remove('speaking');
+                micBtn.classList.remove('speaking');
+                waveRings.forEach(r => r.classList.remove('active'));
+                return;
+            }
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
+            }
+        });
+
+        sendBtn.addEventListener('click', () => {
+            const text = textInput.value.trim();
+            if (text) {
+                addMessage('user', text);
+                textInput.value = '';
+                processUserInput(text);
+            }
+        });
+
+        textInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const text = textInput.value.trim();
+                if (text) {
+                    addMessage('user', text);
+                    textInput.value = '';
+                    processUserInput(text);
+                }
+            }
+        });
+
+        // Tecla espacio para activar micrófono (atajo)
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && document.activeElement !== textInput && !isListening && !isSpeaking) {
+                e.preventDefault();
+                startListening();
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space' && isListening) {
+                e.preventDefault();
+                stopListening();
+            }
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ==================== ANIMATION LOOP ====================
+        const clock = new THREE.Clock();
+        let timeSinceLastFaceUpdate = 0;
+
+        function animate(timestamp) {
+            requestAnimationFrame(animate);
+
+            const dt = Math.min(clock.getDelta(), 0.1);
+            const now = Date.now();
+
+            controls.update();
+
+            // Refuerzo del límite frontal por si el navegador/táctil intenta pasar el ángulo permitido.
+            const cameraOffset = camera.position.clone().sub(controls.target);
+            const currentAzimuth = Math.atan2(cameraOffset.x, cameraOffset.z);
+            const lockedAzimuth = THREE.MathUtils.clamp(currentAzimuth, controls.minAzimuthAngle, controls.maxAzimuthAngle);
+            if (Math.abs(currentAzimuth - lockedAzimuth) > 0.0001) {
+                const radiusXZ = Math.sqrt(cameraOffset.x * cameraOffset.x + cameraOffset.z * cameraOffset.z);
+                camera.position.x = controls.target.x + Math.sin(lockedAzimuth) * radiusXZ;
+                camera.position.z = controls.target.z + Math.cos(lockedAzimuth) * radiusXZ;
+                camera.lookAt(controls.target);
+                controls.update();
+            }
+
+            // El robot sigue al usuario/cámara, pero solo dentro del ángulo frontal.
+            // Así parece que mira al visitante sin enseñar la parte trasera.
+            const dxToCamera = camera.position.x - robotGroup.position.x;
+            const dzToCamera = camera.position.z - robotGroup.position.z;
+            const targetRobotYaw = THREE.MathUtils.clamp(Math.atan2(dxToCamera, dzToCamera), -0.48, 0.48);
+            robotGroup.rotation.y += (targetRobotYaw - robotGroup.rotation.y) * dt * 4.2;
+
+            // Parpadeo aleatorio cuando está idle
+            if (!isSpeaking && !isListening && !isThinking) {
+                if (!isBlinking && now - lastBlinkTime > blinkInterval) {
+                    isBlinking = true;
+                    currentBlinkProgress = 0;
+                    lastBlinkTime = now;
+                    blinkInterval = 2500 + Math.random() * 5000;
+                }
+                if (isBlinking) {
+                    currentBlinkProgress += dt * 8;
+                    if (currentBlinkProgress >= 2) {
+                        isBlinking = false;
+                        currentBlinkProgress = 0;
+                        needsFaceUpdate = true;
+                    } else if (currentBlinkProgress <= 1) {
+                        // Cerrando
+                        needsFaceUpdate = true;
+                    } else {
+                        // Abriendo
+                        needsFaceUpdate = true;
+                    }
+                }
+            } else {
+                isBlinking = false;
+                currentBlinkProgress = 0;
+            }
+
+            // Animación de boca al hablar
+            if (isSpeaking) {
+                if (now - lastMouthToggle > mouthInterval) {
+                    mouthOpen = !mouthOpen;
+                    lastMouthToggle = now;
+                    mouthInterval = 100 + Math.random() * 130;
+                    needsFaceUpdate = true;
+                }
+            } else if (!isSpeaking && mouthOpen) {
+                mouthOpen = false;
+                needsFaceUpdate = true;
+            }
+
+            // Actualizar textura facial si es necesario
+            if (needsFaceUpdate) {
+                let blinkVal = 0;
+                if (isBlinking) {
+                    if (currentBlinkProgress <= 1) {
+                        blinkVal = currentBlinkProgress;
+                    } else {
+                        blinkVal = 2 - currentBlinkProgress;
+                    }
+                    blinkVal = Math.max(0, Math.min(1, blinkVal));
+                }
+                drawFace(robotState, mouthOpen, blinkVal);
+                faceTexture.needsUpdate = true;
+                needsFaceUpdate = false;
+            }
+
+            // Pequeña oscilación de la antena
+            antennaBall.rotation.x += dt * 1.5;
+            antennaBall.position.x = Math.sin(timestamp * 0.003) * 0.015;
+
+            // Robot estable al hablar: solo se mueve la boca y las luces, no se balancea
+            robotGroup.position.x = 0;
+            robotGroup.rotation.z = 0;
+
+            // Animación de la luz de pantalla
+            if (isSpeaking) {
+                robotScreenLight.intensity += (3.5 + Math.sin(timestamp * 0.03) * 0.8 - robotScreenLight.intensity) * dt * 8;
+            } else if (isThinking) {
+                robotScreenLight.intensity += (2.5 + Math.sin(timestamp * 0.05) * 0.5 - robotScreenLight.intensity) * dt * 6;
+            } else {
+                robotScreenLight.intensity += (1.5 - robotScreenLight.intensity) * dt * 4;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Iniciar animación
+        requestAnimationFrame(animate);
+
+        // ==================== INICIALIZACIÓN ====================
+        console.log('🚌 Taquilla de Autobuses - Robot 3D listo');
+        console.log('🎤 Haz clic en el micrófono o presiona ESPACIO para hablar');
+        console.log('⌨️ También puedes escribir en el cuadro de texto');
+        console.log('🔧 La función de respuestas está en processUserInput() - ¡personalízala!');
+
+        // Asegurar que las voces estén cargadas
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = () => {
+                speechSynthesis.getVoices();
+            };
+        }
+
+        // Pequeño mensaje inicial del robot
+        setTimeout(() => {
+            if (!isSpeaking && !isListening) {
+                const initMsg = 'Sistema listo. Puedes preguntarme sobre horarios, billetes o precios.';
+                addMessage('robot', initMsg);
+                // No hablamos automáticamente para no molestar
+            }
+        }, 1500);
+    </script>
+</body>
+</html>
